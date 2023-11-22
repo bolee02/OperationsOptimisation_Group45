@@ -12,7 +12,7 @@ def plane_assigned_to_only_one_gate(x, I) -> np.ndarray:
     """
     array = np.array((len(I), 1), dtype=bool)
     for i in range(len(I)):
-        array[i] = sum(x[i]) == 1
+        array[i] = np.sum(x[:, i], axis=0) == 1
 
     return array
 
