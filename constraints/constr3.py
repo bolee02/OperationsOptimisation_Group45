@@ -1,4 +1,5 @@
 import numpy as np
+from gurobipy import quicksum
 
 
 def plane_assigned_to_only_one_gate(x) -> np.ndarray:
@@ -11,4 +12,8 @@ def plane_assigned_to_only_one_gate(x) -> np.ndarray:
     :return: array which is true if the condition is made, otherwise false
     """
     return np.sum(x, axis=0) == 1
+
+
+def plane_assigned_to_only_one_gate_dict(x, K_i, K_d):
+    return (quicksum(x[:, k]) for k in range(len(K_d.keys())+len(K_i.keys())))
 
