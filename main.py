@@ -53,3 +53,8 @@ I_i = {
     "ac7":{1:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:1, 7:1, 8:0},
     "ac8":{1:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:1, 8:1}
 }
+
+#set of aircraft overlapping at time interval t
+def overlapping_aircraft(I, t_i):
+    I_t = {k: v for k, v in I.items() if v[t_i] == 1}
+    return I_t    
