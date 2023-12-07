@@ -18,6 +18,12 @@ K_i = {
     "a": {"g1": GRB.INFINITY, "g2": GRB.INFINITY, "g3": GRB.INFINITY, "g4": GRB.INFINITY, "e": GRB.INFINITY}  # Apron
 }
 
+# Set of all fixed domestic gates
+K_prime_d = set(K_d.keys()) - {"a"}
+
+# Set of all fixed international gates
+K_prime_i = set(K_i.keys()) - {"a"}
+
 # Set of time intervals
 t = {
     1: "09:00-10:00",
@@ -30,7 +36,7 @@ t = {
     8: "16:00-17:00"
 }
 
-# Set of all domestic aircraft and time intervals
+# Set of all domestic aircraft and presence in time intervals
 I_d = {
     "ac1": {1: 1, 2: 1, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0},
     "ac2": {1: 0, 2: 1, 3: 1, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0},
@@ -41,7 +47,7 @@ I_d = {
     "ac7": {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 1, 8: 1}
 }
 
-# Set of all international aircraft and time intervals
+# Set of all international aircraft and presence in time intervals
 I_i = {
     "ac1": {1: 1, 2: 1, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0},
     "ac2": {1: 0, 2: 1, 3: 1, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0},
@@ -50,6 +56,12 @@ I_i = {
     "ac5": {1: 0, 2: 0, 3: 0, 4: 0, 5: 1, 6: 1, 7: 0, 8: 0},
     "ac6": {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 1, 7: 1, 8: 0},
     "ac7": {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 1, 8: 1}
+}
+
+# Set of all aircraft
+I = {
+    "d": I_d
+    "i": I_i
 }
 
 # Set of aircraft overlapping at time interval t - I_Dt or I_It
