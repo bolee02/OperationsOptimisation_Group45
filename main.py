@@ -41,7 +41,7 @@ I_d = {
     "ac7": {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 1, 8: 1}
 }
 
-#set of all international aircraft and time intervals
+#set of all international aircraft and time intervals 
 I_i = {
     "ac1": {1: 1, 2: 1, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0},
     "ac2": {1: 0, 2: 1, 3: 1, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0},
@@ -52,7 +52,15 @@ I_i = {
     "ac7": {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 1, 8: 1}
 }
 
-#set of aircraft overlapping at time interval t
+#set of aircraft overlapping at time interval t - I_Dt or I_It
 def overlapping_aircraft(I, t_i):
     I_t = {k: v for k, v in I.items() if v[t_i] == 1}
     return I_t    
+
+#set containing I_Dt or I_It for all t - T_D or T_I
+def overlapping_aircraft_set(I, t):
+    T = {k: overlapping_aircraft(I, k) for k in t}
+    return T
+         
+    
+    
