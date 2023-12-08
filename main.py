@@ -1,4 +1,4 @@
-from gurobipy import GRB.INFINITY
+from gurobipy import GRB
 
 # Set of domestic gates
 K_d = {
@@ -67,6 +67,8 @@ I = {
 # Set of aircraft overlapping at time interval t - I_Dt or I_It
 def overlapping_aircraft(I, t_i):
     I_t = {k: v for k, v in I.items() if v[t_i] == 1}
+    if len(I_t) == 1:
+        return dict()
     return I_t
 
 # Set containing I_Dt or I_It for all t - T_D or T_I
