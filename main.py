@@ -49,6 +49,24 @@ t = {
     8: "16:00-17:00"
 }
 
+# Set of all aircraft, 1 if domestic, 0 if international
+I = {
+    1: 1,
+    2: 1,
+    3: 1,
+    4: 1,
+    5: 1,
+    6: 1,
+    7: 1,
+    8: 0,
+    9: 0,
+    10: 0,
+    11: 0,
+    12: 0,
+    13: 0,
+    14: 0
+}
+
 # Set of all domestic aircraft and presence in time intervals
 I_d = {
     1: {1: 1, 2: 1, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0},
@@ -69,12 +87,6 @@ I_i = {
     12: {1: 0, 2: 0, 3: 0, 4: 0, 5: 1, 6: 1, 7: 0, 8: 0},
     13: {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 1, 7: 1, 8: 0},
     14: {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 1, 8: 1}
-}
-
-# Set of all aircraft
-I = {
-    "d": I_d,
-    "i": I_i
 }
 
 # Number of passengers coming from entrance of airport to aircraft i
