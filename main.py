@@ -60,7 +60,7 @@ I_i = {
 
 # Set of all aircraft
 I = {
-    "d": I_d
+    "d": I_d,
     "i": I_i
 }
 
