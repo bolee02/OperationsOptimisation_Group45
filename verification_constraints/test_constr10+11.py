@@ -1,17 +1,17 @@
 import numpy as np
-
+#decision variable (change): i aircrafts assigned to k gates
 x = np.array([
     [1, 0, 0, 0, 0],
     [0, 1, 0, 0, 0],
     [0, 0, 0, 1, 0],
 ])
-
+#decision variable (change): fraction of transit passengers in each a/c i travelling to a/c to j
 y_ijkl = np.array([
     [0, 0.2, 0.3],
     [0, 0, 0],
     [0.5, 0, 0],
 ])
-
+#constant parameter: non-transit passengers for each a/c
 e_i = np.array([100,100,100])
 
 p_ij = np.array([
