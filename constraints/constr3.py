@@ -9,5 +9,5 @@ def plane_assigned_to_only_one_gate_dict(x: dict, i: int, K: dict):
     :param K: Set of all gates
     :return:
     """
-    return quicksum(x[i, k] for k in range(len(K.keys()))) == 1
+    return quicksum(x[i, k] for k in list(K.keys())) == 1
 

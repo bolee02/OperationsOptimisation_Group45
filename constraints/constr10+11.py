@@ -1,32 +1,22 @@
 import numpy as np
+from gurobipy import quicksum
 
-def transit_leaving(x,p_ij,w_ikl) -> np.ndarray:
+def transit_leaving(x: dict, p_ij: dict, w_ikl: dict, i: int) -> np.ndarray:
     """
     Condition to ensure all transit passengers of aircraft i travel from assigned gate k to other gates
     :param x: numpy array: 1 if aircraft 𝑖 is assigned to gate 𝑘, and 0 otherwise. (decision variable)
-    :type x: np.ndarray
     :param p_ij: # of passengers transiting from a/c i to a/c to j
-    :type p_ij: np.ndarray
     :param w_ikl: # of passengers of a/c i travelling from gate k to gate l
-    :type w_ikl: np.ndarray for each a/c
+    :param i: Aircraft index
     :return: an array that returns true for each a/c i if condition is made, false otherwise
     """
-    #two arrays for boolean checking
-    RHS_arr = []
-    LHS_arr = []
-    for i,ac2gate in enumerate(x):
-        #find the assigned gate of a/c i
-        k = np.nonzero(ac2gate)[0]
-        #if there is an assigned gate k
-        if len(k) > 0:
-            #total passengers transiting from a/c i (RIGHT HAND SIDE)
-            RHS = np.sum(p_ij[i])
-            RHS_arr.append(RHS)
-            #passengers of a/c i travelling from gate k to other gates (LEFT HAND SIDE)
-            LHS = np.sum(w_ikl[i])
-            LHS_arr.append(LHS)
-    condition = np.equal(RHS_arr,LHS_arr)
-    return condition
+    #find the assigned gate of a/c i
+    k = list(x[i].keys())[list(x[i].values()).index(1)]
+    #total passengers transiting from a/c i (RIGHT HAND SIDE)
+    RHS = quicksum([p_ij[i, j] for j in list(x.keys())]) * x[i, k]
+    #passengers of a/c i travelling from gate k to other gates (LEFT HAND SIDE)
+    LHS = quicksum(w_ikl[i, k, l] for l in list(x[0].keys()))
+    return LHS == RHS
 
 def transit_coming(x,p_ij,w_ikl) -> np.ndarray:
     """
