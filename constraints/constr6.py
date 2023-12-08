@@ -2,24 +2,28 @@ import numpy as np
 from gurobipy import Model, GRB, LinExpr, quicksum
 
 
-def number_of_aircraft_in_the_apron_old(x, K_d, I_d, I_i, K_i):
-    NA = find_number_in_apron(K_d, I_d) + find_number_in_apron(K_i, I_i)
-    return np.sum(x[len(K_d)+len(K_i)+1, :], axis=0) == NA
-
-
-def number_of_aircraft_in_the_apron(x, K_d, I_d, I_i, K_i):
-    NA = find_number_in_apron(K_d, I_d) + find_number_in_apron(K_i, I_i)
+def number_of_aircraft_in_the_apron(x: dict, K_d: dict, I_d: dict, I_D_t: dict, K_i: dict, I_i: dict,  I_I_t: dict):
+    """
+    :param x: Gate assignment dict
+    :param K_d: Set of all domestic gates
+    :param I_d: Set of all domestic aircraft
+    :param I_D_t: Set of all domestic overlapping aircraft
+    :param K_i: Set of all international gates
+    :param I_i: Set of all international aircraft
+    :param I_I_t: Set of all international overlapping aircraft
+    :return:
+    """
+    NA = find_number_in_apron(K_d, I_d, I_D_t) + find_number_in_apron(K_i, I_i, I_I_t)
     return (quicksum(x[len(K_d.keys())+len(K_i.keys())+1, i]) for i in range(len(I_d.keys())+len(I_i.keys()))) == NA
 
 
-def find_number_in_apron(K, I, It):
-    '''
-    :param K:
-    :type K: dict
-    :param I:
-    :type I: dict
+def find_number_in_apron(K: dict, I: dict, It: dict):
+    """
+    :param K: Set of gates
+    :param I: Set of aircraft
+    :param It: Set of overlapping aircraft
     :return:
-    '''
+    """
     I_len = len(I.keys()) + 1
     K_len = len(K.keys()) - 1
 
@@ -33,7 +37,9 @@ def find_number_in_apron(K, I, It):
 
     for i in range(1, I_len):
         for j in range(1, I_len):
-            if not any(all(aircraft in list(It_x.values()) for aircraft in [I[i], I[j]]) for It_x in list(It.values())) and i != j:
+            # if aircraft i and j are in all present in any instance It_x of the overlapping set I_t and i is not j
+            # create a link between the aircraft
+            if not any(all(aircraft in list(It_x.keys()) for aircraft in [i, j]) for It_x in list(It.values())) and i != j:
                 Z[i, j] = model.addVar(lb=0, ub=1, vtype=GRB.BINARY, name=f'x_{i}{j}')
             else:
                 Z[i, j] = 0
@@ -56,10 +62,3 @@ def find_number_in_apron(K, I, It):
     model.update()
     model.optimize()
     return I_len - 1 - model.ObjVal
-
-
-a = {1: "a", 2: "b", 3: "c"}  # I
-b = {1: "a", 2: "b"}  # K
-c = {0: a}
-
-print(find_number_in_apron(b, a, c))

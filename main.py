@@ -1,4 +1,6 @@
 from gurobipy import GRB
+from constraints.constr6 import find_number_in_apron
+
 
 # Set of domestic gates
 K_d = {
@@ -77,3 +79,6 @@ def overlapping_aircraft(I, t_i):
 def overlapping_aircraft_set(I, t):
     T = {k: overlapping_aircraft(I, k) for k in t}
     return T
+
+
+print("Done")
