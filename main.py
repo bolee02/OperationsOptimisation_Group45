@@ -1,6 +1,4 @@
 from gurobipy import GRB
-from constraints.constr6 import find_number_in_apron
-
 
 # Set of domestic gates
 K_d = {
@@ -13,10 +11,10 @@ K_d = {
 
 # Set of international gates
 K_i = {
-    "g1": {"g1": 0, "g2": 50, "g3": 100, "g4": 150, "e": 50},
-    "g2": {"g1": 50, "g2": 0, "g3": 50, "g4": 100, "e": 50},
-    "g3": {"g1": 100, "g2": 50, "g3": 0, "g4": 50, "e": 50},
-    "g4": {"g1": 150, "g2": 100, "g3": 50, "g4": 0, "e": 50},
+    "g5": {"g5": 0, "g6": 50, "g7": 100, "g8": 150, "e": 50},
+    "g6": {"g5": 50, "g6": 0, "g7": 50, "g8": 100, "e": 50},
+    "g7": {"g5": 100, "g6": 50, "g7": 0, "g8": 50, "e": 50},
+    "g8": {"g5": 150, "g6": 100, "g7": 50, "g8": 0, "e": 50},
     "a": {"g1": GRB.INFINITY, "g2": GRB.INFINITY, "g3": GRB.INFINITY, "g4": GRB.INFINITY, "e": GRB.INFINITY}  # Apron
 }
 
@@ -79,6 +77,3 @@ def overlapping_aircraft(I, t_i):
 def overlapping_aircraft_set(I, t):
     T = {k: overlapping_aircraft(I, k) for k in t}
     return T
-
-
-print("Done")
