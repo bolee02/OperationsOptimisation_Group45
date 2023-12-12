@@ -3,37 +3,28 @@ from constraints.constr3 import plane_assigned_to_only_one_gate
 from constraints.constr4_5 import one_aircraft_at_gate
 from constraints.constr6 import number_of_aircraft_in_the_apron
 from constraints.constr10_11 import transit_leaving, transit_coming
+import random
+
+def generate_random_boolean_dict(keys, intervals):
+    return {k: {t: random.choice([0, 1]) for t in intervals} for k in keys}
+def generate_random_integer_dict(keys, max_value):
+    return {k: random.randint(0, max_value) for k in keys}
 
 # Set of all gates, 1 if domestic, 0 if international
-K = {
-    "g1": 1,
-    "g2": 1,
-    "g3": 1,
-    "g4": 1,
-    "g5": 0,
-    "g6": 0,
-    "g7": 0,
-    "g8": 0,
-    "a": 0
-}
+num_gates = random.randint(1, 10)
+gates = [f"g{i}" for i in range(1, num_gates + 1)]
+K = {gate: random.choice([0, 1]) for gate in gates}
+K.update({"a": 0})
 
 # Set of domestic gates
-K_d = {
-    "g1": {"g1": 0, "g2": 50, "g3": 100, "g4": 150, "e": 50},
-    "g2": {"g1": 50, "g2": 0, "g3": 50, "g4": 100, "e": 50},
-    "g3": {"g1": 100, "g2": 50, "g3": 0, "g4": 50, "e": 50},
-    "g4": {"g1": 150, "g2": 100, "g3": 50, "g4": 0, "e": 50},
-    "a": {"g1": GRB.INFINITY, "g2": GRB.INFINITY, "g3": GRB.INFINITY, "g4": GRB.INFINITY, "e": GRB.INFINITY}  # Apron
-}
+K.update({"e": 1})
+domestic_gates = [gate for gate, is_domestic in K.items() if is_domestic]
+K_d = {gate: generate_random_integer_dict(domestic_gates, 100) for gate in domestic_gates}
 
 # Set of international gates
-K_i = {
-    "g5": {"g5": 0, "g6": 50, "g7": 100, "g8": 150, "e": 50},
-    "g6": {"g5": 50, "g6": 0, "g7": 50, "g8": 100, "e": 50},
-    "g7": {"g5": 100, "g6": 50, "g7": 0, "g8": 50, "e": 50},
-    "g8": {"g5": 150, "g6": 100, "g7": 50, "g8": 0, "e": 50},
-    "a": {"g1": GRB.INFINITY, "g2": GRB.INFINITY, "g3": GRB.INFINITY, "g4": GRB.INFINITY, "e": GRB.INFINITY}  # Apron
-}
+K.update({"e": 0})
+international_gates = [gate for gate, is_domestic in K.items() if not is_domestic]
+K_i = {gate: generate_random_integer_dict(international_gates, 100) for gate in international_gates}
 
 # Set of all fixed domestic gates
 K_prime_d = set(K_d.keys()) - {"a"}
@@ -54,98 +45,24 @@ t = {
 }
 
 # Set of all aircraft, 1 if domestic, 0 if international
-I = {
-    1: 1,
-    2: 1,
-    3: 1,
-    4: 1,
-    5: 1,
-    6: 1,
-    7: 1,
-    8: 0,
-    9: 0,
-    10: 0,
-    11: 0,
-    12: 0,
-    13: 0,
-    14: 0
-}
+num_aircraft = random.randint(1, 14)
+aircraft = list(range(1, num_aircraft + 1))
+I = {i: random.choice([0, 1]) for i in aircraft}
 
 # Set of all domestic aircraft and presence in time intervals
-I_d = {
-    1: {1: 1, 2: 1, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0},
-    2: {1: 0, 2: 1, 3: 1, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0},
-    3: {1: 0, 2: 0, 3: 1, 4: 1, 5: 0, 6: 0, 7: 0, 8: 0},
-    4: {1: 0, 2: 0, 3: 0, 4: 1, 5: 1, 6: 0, 7: 0, 8: 0},
-    5: {1: 0, 2: 0, 3: 0, 4: 0, 5: 1, 6: 1, 7: 0, 8: 0},
-    6: {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 1, 7: 1, 8: 0},
-    7: {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 1, 8: 1}
-}
+I_d = generate_random_boolean_dict(aircraft[:num_gates], t)
 
 # Set of all international aircraft and presence in time intervals
-I_i = {
-    8: {1: 1, 2: 1, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0},
-    9: {1: 0, 2: 1, 3: 1, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0},
-    10: {1: 0, 2: 0, 3: 1, 4: 1, 5: 0, 6: 0, 7: 0, 8: 0},
-    11: {1: 0, 2: 0, 3: 0, 4: 1, 5: 1, 6: 0, 7: 0, 8: 0},
-    12: {1: 0, 2: 0, 3: 0, 4: 0, 5: 1, 6: 1, 7: 0, 8: 0},
-    13: {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 1, 7: 1, 8: 0},
-    14: {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 1, 8: 1}
-}
+I_i = generate_random_boolean_dict(aircraft[num_gates:], t)
 
-# Number of passengers coming from entrance of airport to aircraft i
-e = {
-    1: 0,
-    2: 0,
-    3: 0,
-    4: 0,
-    5: 0,
-    6: 0,
-    7: 0,
-    8: 0,
-    9: 0,
-    10: 0,
-    11: 0,
-    12: 0,
-    13: 0,
-    14: 0
-}
+# Number of passengers coming from entrance of the airport to aircraft i
+e = generate_random_integer_dict(aircraft, 0)
 
 # Number of passengers leaving the airport via its exit after the arrival of aircraft i
-f = {
-    1: 0,
-    2: 0,
-    3: 0,
-    4: 0,
-    5: 0,
-    6: 0,
-    7: 0,
-    8: 0,
-    9: 0,
-    10: 0,
-    11: 0,
-    12: 0,
-    13: 0,
-    14: 0
-}
+f = generate_random_integer_dict(aircraft, 0)
 
 # Number of passengers transiting from aircraft i to aircraft j
-p = {
-    1: {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0},
-    2: {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0},
-    3: {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0},
-    4: {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0},
-    5: {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0},
-    6: {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0},
-    7: {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0},
-    8: {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0},
-    9: {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0},
-    10: {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0},
-    11: {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0},
-    12: {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0},
-    13: {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0},
-    14: {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0}
-}
+p = {i: generate_random_integer_dict(aircraft, 0) for i in aircraft}
 
 # Set of aircraft overlapping at time interval t - I_Dt or I_It
 def overlapping_aircraft(I: dict, t_i):
@@ -192,7 +109,7 @@ for i in list(I.keys()):
 T_D = overlapping_aircraft_set(I_d, t)
 for I_dt in T_D:
     for k in K_prime_d:
-        model.addConstr(one_aircraft_at_gate(x, T_D[I_dt]), name=f"C{constraint_counter}")
+        model.addConstr(one_aircraft_at_gate(x, I_dt), name=f"C{constraint_counter}")
         constraint_counter += 1
 
 """ Refrenced in paper as equation (5). Checks that for a certain time period, only one aircraft is assigned to a 

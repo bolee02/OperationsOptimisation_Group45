@@ -192,7 +192,7 @@ for i in list(I.keys()):
 T_D = overlapping_aircraft_set(I_d, t)
 for I_dt in T_D:
     for k in K_prime_d:
-        model.addConstr(one_aircraft_at_gate(x, T_D[I_dt]), name=f"C{constraint_counter}")
+        model.addConstr(one_aircraft_at_gate(x, I_dt), name=f"C{constraint_counter}")
         constraint_counter += 1
 
 """ Refrenced in paper as equation (5). Checks that for a certain time period, only one aircraft is assigned to a 
