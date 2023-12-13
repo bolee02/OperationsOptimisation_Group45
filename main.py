@@ -164,10 +164,8 @@ def overlapping_aircraft_set(I: dict, t: dict):
     return T
 
 
-w = {1: {1: {1: "a"}}}
-
 model(I, I_d, I_i,
       K, K_d, K_i,
       overlapping_aircraft_set(I_d, t), overlapping_aircraft_set(I_i, t),
       K_prime_d, K_prime_i,
-      p, e, f, w)
+      p, e, f)

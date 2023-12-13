@@ -6,7 +6,7 @@ from constraints.constr10_11 import transit_leaving, transit_coming
 
 
 def model(I: dict, I_d: dict, I_i: dict, K: dict, K_d: dict, K_i: dict, T_D: dict, T_I: dict, K_prime_d: dict,
-          K_prime_i: dict, p: dict, e: dict, f: dict, w: dict):
+          K_prime_i: dict, p: dict, e: dict, f: dict):
     """
     :param I: All aircraft
     :param I_d: All domestic aircraft
@@ -36,6 +36,14 @@ def model(I: dict, I_d: dict, I_i: dict, K: dict, K_d: dict, K_i: dict, T_D: dic
     for i in list(I.keys()):
         for j in list(K.keys()):
             x[i, j] = ga.addVar(lb=0, ub=1, vtype=GRB.BINARY, name=f'x_{i}{j}')
+
+
+    w = dict()
+    "Create omega, as these values can change during the optimisation process this should be a gurobi variable"
+    for i in list(I.keys()):
+        for k in list(K.keys()):
+            for l in list(K.keys()):
+                w[i, k, l] = ga.addVar(lb=0, vtype=GRB.INTEGER, name=f'w^{i}_{k}{l}')
 
     ga.update()
     """ Referenced in paper as equation (3). Forces plane to be ony assigned to one gate. Boolean condition is to check 
@@ -89,9 +97,9 @@ def model(I: dict, I_d: dict, I_i: dict, K: dict, K_d: dict, K_i: dict, T_D: dic
         K_gi = K_d if I[i] else K_i
         for k in list(K_gi.keys()):
             for l in list(K_gi.keys()):
-                obj += w[i, k, l] * K_gi[k, l]
+                obj += w[i, k, l] * K_gi[k][l]
 
-            obj += (e[i] + f[i]) * K_gi[k, "e"] * x[i, k]
+            obj += (e[i] + f[i]) * K_gi[k]["e"] * x[i, k]
 
     ga.setObjective(obj, GRB.MINIMIZE)
     ga.update()
