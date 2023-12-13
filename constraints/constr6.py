@@ -2,7 +2,7 @@ import numpy as np
 from gurobipy import Model, GRB, LinExpr, quicksum
 
 
-def number_of_aircraft_in_the_apron(x: dict, K_d: dict, I_d: dict, I_D_t: dict, K_i: dict, I_i: dict,  I_I_t: dict):
+def number_of_aircraft_in_the_apron(x: dict, K: dict, I: dict, NA: int):
     """
     :param x: Gate assignment dict
     :param K_d: Set of all domestic gates
@@ -13,8 +13,7 @@ def number_of_aircraft_in_the_apron(x: dict, K_d: dict, I_d: dict, I_D_t: dict, 
     :param I_I_t: Set of all international overlapping aircraft
     :return:
     """
-    NA = find_number_in_apron(K_d, I_d, I_D_t) + find_number_in_apron(K_i, I_i, I_I_t)
-    return (quicksum(x[len(K_d.keys())+len(K_i.keys())+1, i]) for i in range(len(I_d.keys())+len(I_i.keys()))) == NA
+    return (quicksum(x[len(K)+1, i]) for i in range(len(I)) == NA)
 
 
 def find_number_in_apron(K: dict, I: dict, It: dict):
