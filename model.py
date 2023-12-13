@@ -19,8 +19,8 @@ def model(I: dict, I_d: dict, I_i: dict, K: dict, K_d: dict, K_i: dict, T_D: dic
     :param K_prime_d:
     :param K_prime_i:
     :param p: Passenger numbers from aircraft to aircraft
-    :param e: Passenger numbers from aircraft to exit
-    :param f: Passenger numbers from exit to aircraft
+    :param e: Passenger numbers from entrance to aircraft
+    :param f: Passenger numbers from aircraft to exit
     :param w: Passenger numbers from aircraft to gate
     :return:
     """
@@ -48,14 +48,14 @@ def model(I: dict, I_d: dict, I_i: dict, K: dict, K_d: dict, K_i: dict, T_D: dic
 
     """ Referenced in paper as equation (4). Checks that for a certain time period, only one aircraft is assigned to a 
         domestic gate """
-    for I_dt in T_D:
+    for I_dt in T_D.values():
         for k in K_prime_d:
             ga.addConstr(one_aircraft_at_gate(x, I_dt, k), name=f"C{constraint_counter}")
             constraint_counter += 1
 
     """ Referenced in paper as equation (5). Checks that for a certain time period, only one aircraft is assigned to a 
         international gate """
-    for I_it in T_I:
+    for I_it in T_I.values():
         for k in K_prime_i:
             ga.addConstr(one_aircraft_at_gate(x, I_it, k), name=f"C{constraint_counter}")
             constraint_counter += 1

@@ -22,7 +22,7 @@ def one_aircraft_at_gate_old(x, T, K_prime) -> np.ndarray:
     return array_time_gates
 
 
-def one_aircraft_at_gate(x, I_t, k):
+def one_aircraft_at_gate(x, I_t: dict, k):
     """
     Conditions to check each gate in time interval T has 1 or less planes assigned
     :param x: numpy array: 1 if aircraft 𝑖 is assigned to gate 𝑘, and 0 otherwise.
@@ -30,4 +30,4 @@ def one_aircraft_at_gate(x, I_t, k):
     :param I_t: set of all aircraft (either domestic or international) overlapping in time interval t
     :type I_t: dict
     """
-    return (quicksum(x[i, k]) for i in range(len(I_t.keys())))
+    return (quicksum(x[i, k] for i in I_t)  <= 1)
