@@ -114,3 +114,18 @@ def model(I: dict, I_d: dict, I_i: dict, K: dict, K_d: dict, K_i: dict, T_D: dic
     ga.setObjective(obj, GRB.MINIMIZE)
     ga.update()
     ga.optimize()
+
+    sol = ga.getVars()
+    gate_names = list(K.keys())
+    for i in I.keys():
+        j = 0
+        while(True):
+            if sol[(i-1)*len(K.keys())+j].X >= 0.99:
+                gate = gate_names[j]
+                print(f"aircraft {i} assigned to gate {gate}")
+                for l in gate_names:
+                    print(f"\t with {ga.getVarByName(f'w^{i}_{gate}{l}').X} passengers going to gate {l}")
+                    pass
+                break
+            j += 1
+

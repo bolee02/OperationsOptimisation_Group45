@@ -31,11 +31,13 @@ I_d = {1: {1: 1, 2: 1, 3: 0},
 I_i = {2: {1: 1, 2: 1, 3: 0},
        3: {1: 1, 2: 1, 3: 0}}
 
+apron_distance = 40
+
 K = {"g1": 1, "g2": 0, "a": 0}
-K_d = {"g1": {"g1": 0, "g2": 10, "e": 20, "a": 40},
-       "a": {"g1": 40, "g2": 40, "e": 40, "a": 40}}
-K_i = {"g2": {"g1": 10, "g2": 0, "e": 20, "a": 40},
-       "a": {"g1": 40, "g2": 40, "e": 40, "a": 40}}
+K_d = {"g1": {"g1": 0, "g2": 10, "e": 20, "a": apron_distance},
+       "a": {"g1": apron_distance, "g2": apron_distance, "e": apron_distance, "a": apron_distance}}
+K_i = {"g2": {"g1": 10, "g2": 0, "e": 20, "a": apron_distance},
+       "a": {"g1": apron_distance, "g2": apron_distance, "e": apron_distance, "a": apron_distance}}
 
 t = {1: 1, 2: 2, 3: 3}
 
