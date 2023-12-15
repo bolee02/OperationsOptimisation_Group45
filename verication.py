@@ -31,11 +31,13 @@ I_d = {1: {1: 1, 2: 1, 3: 0},
 I_i = {2: {1: 1, 2: 1, 3: 0},
        3: {1: 1, 2: 1, 3: 0}}
 
+apron_distance = 40
+
 K = {"g1": 1, "g2": 0, "a": 0}
-K_d = {"g1": {"g1": 0, "g2": 10, "e": 20, "a": GRB.INFINITY},
-       "a": {"g1": GRB.INFINITY, "g2": GRB.INFINITY, "e": GRB.INFINITY, "a": GRB.INFINITY}}
-K_i = {"g2": {"g1": 10, "g2": 0, "e": 20, "a": GRB.INFINITY},
-       "a": {"g1": GRB.INFINITY, "g2": GRB.INFINITY, "e": GRB.INFINITY, "a": GRB.INFINITY}}
+K_d = {"g1": {"g1": 0, "g2": 10, "e": 20, "a": apron_distance},
+       "a": {"g1": apron_distance, "g2": apron_distance, "e": apron_distance, "a": apron_distance}}
+K_i = {"g2": {"g1": 10, "g2": 0, "e": 20, "a": apron_distance},
+       "a": {"g1": apron_distance, "g2": apron_distance, "e": apron_distance, "a": apron_distance}}
 
 t = {1: 1, 2: 2, 3: 3}
 
@@ -52,5 +54,45 @@ p = {1: {1: 0, 2: 50, 3: 50, 4: 50},  # 200 in the plane
 
 e = {1: 100, 2: 100, 3: 100, 4: 100}
 f = {1: 50, 2: 50, 3: 50, 4: 50}
+
+# from constraints.constr6 import find_number_in_apron
+# print(find_number_in_apron(
+#     {
+#         "g1": {"g1": 0, "g2": 10, "e": 20, "a": 0},
+#         "g2": {"g1": 10, "g2": 00, "e": 20, "a": 0},
+#         "a": {"g1": 0, "g2": 0, "e": 0, "a": 0}
+#     },
+#     {
+#         1: {1: 1, 2: 0, 3: 0},
+#         2: {1: 1, 2: 1, 3: 0},
+#         3: {1: 0, 2: 1, 3: 1},
+#         4: {1: 0, 2: 1, 3: 1},
+#         6: {1: 0, 2: 0, 3: 1},
+#     },
+#     {
+#         1: [1, 2],
+#         2: [2, 3, 4],
+#         3: [3, 4, 5]
+#     }
+# ))
+# print(find_number_in_apron(
+#     {
+#         "g1": {"g1": 0, "g2": 10, "e": 20, "a": 0},
+#         "g2": {"g1": 10, "g2": 00, "e": 20, "a": 0},
+#         "a": {"g1": 0, "g2": 0, "e": 0, "a": 0}
+#     },
+#     {
+#         1: {1: 1, 2: 0, 3: 0},
+#         2: {1: 1, 2: 0, 3: 0},
+#         3: {1: 0, 2: 1, 3: 0},
+#         4: {1: 0, 2: 1, 3: 0},
+#         6: {1: 0, 2: 0, 3: 1},
+#     },
+#     {
+#         1: [1, 2],
+#         2: [3, 4],
+#         3: []
+#     }
+# ))
 
 model(I, I_d, I_i, K, K_d, K_i, T_D, T_I, K_prime_d, K_prime_i, p, e, f)

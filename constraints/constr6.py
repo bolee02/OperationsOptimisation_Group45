@@ -2,15 +2,14 @@ import numpy as np
 from gurobipy import Model, GRB, LinExpr, quicksum
 
 
-def number_of_aircraft_in_the_apron(x: dict, K: dict, I: dict, NA: int) -> LinExpr:
+def number_of_aircraft_in_the_apron(x: dict, IDt: dict, NA: int) -> LinExpr:
     """
     :param x: Gate assignment dict
-    :param K: Set of all gates
-    :param I: Set of all aircaft
+    :param IDt: Set of all overlapping aircraft at time instance t
     :param NA: Apron number
     :return: LinExpr instance of the constraint
     """
-    return quicksum(x[i, "a"] for i in I) == NA
+    return quicksum(x[i, "a"] for i in IDt) == NA
 
 
 def find_number_in_apron(K: dict, I: dict, It: dict) -> int:
@@ -36,9 +35,10 @@ def find_number_in_apron(K: dict, I: dict, It: dict) -> int:
 
     for i in nodes[1:-1]:
         for j in nodes[1:-1]:
-            # if aircraft i and j are in all present in any instance It_x of the overlapping set I_t and i is not j
+            # if aircraft i and j are in all present in any instance It_x of the overlapping set I_t
+            # and i is smaller than j since the flow is uniderictional
             # create a link between the aircraft
-            if not any(all(aircraft in It_x for aircraft in [i, j]) for It_x in list(It.values())) and i != j:
+            if not any(all(aircraft in It_x for aircraft in [i, j]) for It_x in list(It.values())) and i < j:
                 Z[i, j] = model.addVar(lb=0, ub=1, vtype=GRB.BINARY, name=f'x_{i}{j}')
             else:
                 Z[i, j] = 0
@@ -60,4 +60,6 @@ def find_number_in_apron(K: dict, I: dict, It: dict) -> int:
     model.setObjective(obj, GRB.MAXIMIZE)
     model.update()
     model.optimize()
-    return len(I_list) + 1 - model.ObjVal
+    return len(I_list) - model.ObjVal
+
+
