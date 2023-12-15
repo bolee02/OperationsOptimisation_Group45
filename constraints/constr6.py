@@ -13,7 +13,7 @@ def number_of_aircraft_in_the_apron(x: dict, K: dict, I: dict, NA: int) -> LinEx
     return quicksum(x[i, "a"] for i in I) == NA
 
 
-def find_number_in_apron(K: dict, I: dict, It: dict) -> int:
+def find_number_in_apron_depr(K: dict, I: dict, It: dict) -> int:
     """
     :param K: Set of gates
     :param I: Set of aircraft
@@ -36,9 +36,10 @@ def find_number_in_apron(K: dict, I: dict, It: dict) -> int:
 
     for i in nodes[1:-1]:
         for j in nodes[1:-1]:
-            # if aircraft i and j are in all present in any instance It_x of the overlapping set I_t and i is not j
+            # if aircraft i and j are in all present in any instance It_x of the overlapping set I_t
+            # and i is smaller than j since the flow is uniderictional
             # create a link between the aircraft
-            if not any(all(aircraft in It_x for aircraft in [i, j]) for It_x in list(It.values())) and i != j:
+            if not any(all(aircraft in It_x for aircraft in [i, j]) for It_x in list(It.values())) and i < j:
                 Z[i, j] = model.addVar(lb=0, ub=1, vtype=GRB.BINARY, name=f'x_{i}{j}')
             else:
                 Z[i, j] = 0
@@ -60,4 +61,18 @@ def find_number_in_apron(K: dict, I: dict, It: dict) -> int:
     model.setObjective(obj, GRB.MAXIMIZE)
     model.update()
     model.optimize()
-    return len(I_list) + 1 - model.ObjVal
+    return len(I_list) - model.ObjVal
+
+
+def find_number_in_apron(K: dict, I: dict, It: dict) -> int:
+    """
+    :param K: Set of gates
+    :param I: Set of aircraft
+    :param It: Set of overlapping aircraft
+    :return: Apron number
+    """
+
+    number = 0
+    for Itx in It.values():
+        number = max(number, len(Itx)-len(K.keys())+1)
+    return number
