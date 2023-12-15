@@ -2,18 +2,17 @@ import numpy as np
 from gurobipy import Model, GRB, LinExpr, quicksum
 
 
-def number_of_aircraft_in_the_apron(x: dict, K: dict, I: dict, NA: int) -> LinExpr:
+def number_of_aircraft_in_the_apron(x: dict, IDt: dict, NA: int) -> LinExpr:
     """
     :param x: Gate assignment dict
-    :param K: Set of all gates
-    :param I: Set of all aircaft
+    :param IDt: Set of all overlapping aircraft at time instance t
     :param NA: Apron number
     :return: LinExpr instance of the constraint
     """
-    return quicksum(x[i, "a"] for i in I) == NA
+    return quicksum(x[i, "a"] for i in IDt) == NA
 
 
-def find_number_in_apron_depr(K: dict, I: dict, It: dict) -> int:
+def find_number_in_apron(K: dict, I: dict, It: dict) -> int:
     """
     :param K: Set of gates
     :param I: Set of aircraft
@@ -64,15 +63,3 @@ def find_number_in_apron_depr(K: dict, I: dict, It: dict) -> int:
     return len(I_list) - model.ObjVal
 
 
-def find_number_in_apron(K: dict, I: dict, It: dict) -> int:
-    """
-    :param K: Set of gates
-    :param I: Set of aircraft
-    :param It: Set of overlapping aircraft
-    :return: Apron number
-    """
-
-    number = 0
-    for Itx in It.values():
-        number = max(number, len(Itx)-len(K.keys())+1)
-    return number

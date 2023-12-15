@@ -68,11 +68,21 @@ def model(I: dict, I_d: dict, I_i: dict, K: dict, K_d: dict, K_i: dict, T_D: dic
             ga.addConstr(one_aircraft_at_gate(x, I_it, k), name=f"C{constraint_counter}")
             constraint_counter += 1
 
-    """ Referenced in paper as equation (6). Checks that the number of aircraft in the apron is the same as the assigned 
-        number """
-    NA = find_number_in_apron(K_d, I_d, T_D) + find_number_in_apron(K_i, I_i, T_I)
-    ga.addConstr(number_of_aircraft_in_the_apron(x, K, I, NA), name=f"C{constraint_counter}")
-    constraint_counter += 1
+    # """ Referenced in paper as equation (6). Checks that the number of aircraft in the apron is the same as the assigned
+    #     number """
+    # NA = find_number_in_apron(K_d, I_d, T_D) + find_number_in_apron(K_i, I_i, T_I)
+    # ga.addConstr(number_of_aircraft_in_the_apron(x, K, I, NA), name=f"C{constraint_counter}")
+    # constraint_counter += 1
+    """ Equation (6) will be replaced by equation (13) and (14)"""
+    for I_dt in T_D.values():
+        if len(I_dt)-len(K_prime_d) > 0:
+            ga.addConstr(number_of_aircraft_in_the_apron(x, I_dt, len(I_dt)-len(K_prime_d)), name=f"C{constraint_counter}")
+            constraint_counter += 1
+    """ Equation (14) """
+    for I_it in T_I.values():
+        if len(I_it)-len(K_prime_d) > 0:
+            ga.addConstr(number_of_aircraft_in_the_apron(x, I_it, len(I_it)-len(K_prime_d)), name=f"C{constraint_counter}")
+            constraint_counter += 1
 
     """ Referenced in paper as equation (10). """
     for i in list(I.keys()):
