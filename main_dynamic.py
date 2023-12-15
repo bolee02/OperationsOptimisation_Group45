@@ -2,26 +2,46 @@ from model import model
 import random
 
 
-def generate_random_boolean_dict(keys, intervals):
-    return {k: {t: random.choice([0, 1]) for t in intervals} for k in keys}
+def generate_random_interval_presence(keys, intervals):
+    boolean_dict = {k: {t: 0 for t in intervals} for k in keys}
+    for k in boolean_dict:
+        start_time = random.randint(0, len(intervals.keys()))
+        boolean_dict[k][start_time] = 1
+        boolean_dict[k][start_time+1] = 1
+    return boolean_dict
 def generate_random_integer_dict(keys, max_value):
     return {k: random.randint(0, max_value) for k in keys}
 
 # Set of all gates, 1 if domestic, 0 if international
-num_gates = random.randint(1, 10)
-gates = [f"g{i}" for i in range(1, num_gates + 1)]
-K = {gate: random.choice([0, 1]) for gate in gates}
-K.update({"a": 0})
+K = {
+    "g1": 1,
+    "g2": 1,
+    "g3": 1,
+    "g4": 1,
+    "g5": 0,
+    "g6": 0,
+    "g7": 0,
+    "g8": 0,
+    "a": 0
+}
 
 # Set of domestic gates
-K.update({"e": 1})
-domestic_gates = [gate for gate, is_domestic in K.items() if is_domestic]
-K_d = {gate: generate_random_integer_dict(domestic_gates, 100) for gate in domestic_gates}
+K_d = {
+    "g1": {"g1": 0, "g2": 50, "g3": 100, "g4": 150, "e": 50},
+    "g2": {"g1": 50, "g2": 0, "g3": 50, "g4": 100, "e": 50},
+    "g3": {"g1": 100, "g2": 50, "g3": 0, "g4": 50, "e": 50},
+    "g4": {"g1": 150, "g2": 100, "g3": 50, "g4": 0, "e": 50},
+    "a": {"g1": 151, "g2": 151, "g3": 151, "g4": 151, "e": 151}  # Apron
+}
 
 # Set of international gates
-K.update({"e": 0})
-international_gates = [gate for gate, is_domestic in K.items() if not is_domestic]
-K_i = {gate: generate_random_integer_dict(international_gates, 100) for gate in international_gates}
+K_i = {
+    "g5": {"g5": 0, "g6": 50, "g7": 100, "g8": 150, "e": 50},
+    "g6": {"g5": 50, "g6": 0, "g7": 50, "g8": 100, "e": 50},
+    "g7": {"g5": 100, "g6": 50, "g7": 0, "g8": 50, "e": 50},
+    "g8": {"g5": 150, "g6": 100, "g7": 50, "g8": 0, "e": 50},
+    "a": {"g1": 151, "g2": 151, "g3": 151, "g4": 151, "e": 151}  # Apron
+}
 
 # Set of all fixed domestic gates
 K_prime_d = set(K_d.keys()) - {"a"}
@@ -47,23 +67,30 @@ aircraft = list(range(1, num_aircraft + 1))
 I = {i: random.choice([0, 1]) for i in aircraft}
 
 # Set of all domestic aircraft and presence in time intervals
-I_d = generate_random_boolean_dict(aircraft[:num_gates], t)
+I_d = generate_random_interval_presence({k: v for k, v in I.items() if v == 1}.keys(), t)
 
 # Set of all international aircraft and presence in time intervals
-I_i = generate_random_boolean_dict(aircraft[num_gates:], t)
+I_i = generate_random_interval_presence({k: v for k, v in I.items() if v == 0}.keys(), t)
+
+# Number of passengers arriving from each aircraft
+pax_arr = generate_random_integer_dict(aircraft, 20)
+
+# Number of passengers leaving the airport via its exit from aircraft i
+f = {k: v-random.randint(0, v) for k, v in pax_arr.items()}
+
+# Number of passengers transiting from aircraft i
+pax_tra = {k: pax_arr[k] - v1 for k, v1 in f.items()}
+
+# Number of passengers entering each aircraft
+pax_en = generate_random_integer_dict(aircraft, 20)
 
 # Number of passengers coming from entrance of the airport to aircraft i
-e = generate_random_integer_dict(aircraft, 0)
-
-# Number of passengers leaving the airport via its exit after the arrival of aircraft i
-f = generate_random_integer_dict(aircraft, 0)
+e = {k: v-random.randint(0, v) for k, v in pax_en.items()}
 
 # Number of passengers transiting from aircraft i to aircraft j
-p = {i: generate_random_integer_dict(aircraft, 0) for i in aircraft}
+#def generate_transiting_passengers(aircraft, pax_en, e):
 
-# TODO: implement dynamic w generation
-w = {1: {1: {1: "a"}}}
-
+p = {i: generate_random_integer_dict(aircraft, 20) for i in aircraft}
 
 # Set of aircraft overlapping at time interval t - I_Dt or I_It
 def overlapping_aircraft(I: dict, t_i):
@@ -85,5 +112,8 @@ def overlapping_aircraft_set(I: dict, t: dict):
     return T
 
 
-
-model(I, I_d, I_i, K, K_d, K_i, overlapping_aircraft_set(I_d, t), overlapping_aircraft_set(I_i, t), K_prime_d, K_prime_i, p, e, f, w)
+model(I, I_d, I_i,
+      K, K_d, K_i,
+      overlapping_aircraft_set(I_d, t), overlapping_aircraft_set(I_i, t),
+      K_prime_d, K_prime_i,
+      p, e, f)
