@@ -99,7 +99,6 @@ def generate_transiting_passengers(aircraft, pax_tra):
     for k in pax_tra:
         pax_tra_hold = pax_tra[k]
         for i in range(possible_transfer_aircraft(k, I), len(aircraft)+1):
-            print(i)
             pax = random.randint(0, pax_tra_hold)
             p[k][i] = pax
             if i == k:
