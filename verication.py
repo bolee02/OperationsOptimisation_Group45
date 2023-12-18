@@ -36,7 +36,7 @@ I_i = {2: {1: 1, 2: 1, 3: 0},
 apron_distance = 100
 
 K = {"g1": 1, "g2": 0, "g3": 1, "a": 0}
-K_d = {"g1": {"g1": 0, "g2": 10, "g3": 10, "e": 20, "a": apron_distance},
+K_d = {"g1": {"g1": 0, "g2": 10, "g3": 10, "e": 19, "a": apron_distance},
        "g3": {"g1": 10, "g2": 10, "g3": 0, "e": 20, "a": apron_distance},
        "a": {"g1": apron_distance, "g2": apron_distance, "g3": apron_distance, "e": apron_distance, "a": apron_distance}}
 K_i = {"g2": {"g1": 10, "g2": 0, "g3": 10, "e": 20, "a": apron_distance},
