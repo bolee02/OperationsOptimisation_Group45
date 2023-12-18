@@ -1,5 +1,5 @@
 from model import model
-from gurobipy import GRB
+from gurobipy import GRB, Model
 
 # Set of aircraft overlapping at time interval t - I_Dt or I_It
 def overlapping_aircraft(I: dict, t_i):
@@ -96,3 +96,4 @@ f = {1: 50, 2: 50, 3: 50, 4: 50}
 # ))
 
 model(I, I_d, I_i, K, K_d, K_i, T_D, T_I, K_prime_d, K_prime_i, p, e, f)
+

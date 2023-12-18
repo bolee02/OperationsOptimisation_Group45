@@ -128,4 +128,4 @@ def model(I: dict, I_d: dict, I_i: dict, K: dict, K_d: dict, K_i: dict, T_D: dic
                     pass
                 break
             j += 1
-    Model().write('LP.lp')
+    ga.write('LP.lp')
