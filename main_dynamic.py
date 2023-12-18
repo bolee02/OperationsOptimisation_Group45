@@ -1,19 +1,23 @@
 from model import model
 import random
 
-total_pax = 20
+total_pax = 330
 min_num_aircraft = 5
 max_num_aircraft = 20
+
 
 def generate_random_interval_presence(keys, intervals):
     boolean_dict = {k: {t: 0 for t in intervals} for k in keys}
     for k in boolean_dict:
-        start_time = random.randint(1, len(intervals.keys()))
+        start_time = random.randint(1, (len(intervals.keys()) - 1))
         boolean_dict[k][start_time] = 1
-        boolean_dict[k][start_time+1] = 1
+        boolean_dict[k][start_time + 1] = 1
     return boolean_dict
+
+
 def generate_random_integer_dict(keys, max_value):
     return {k: random.randint(0, max_value) for k in keys}
+
 
 # Set of all gates, 1 if domestic, 0 if international
 K = {
@@ -34,7 +38,8 @@ K_d = {
     "g2": {"g1": 50, "g2": 0, "g3": 50, "g4": 100, "g5": 250, "g6": 200, "g7": 250, "g8": 300, "e": 50, "a": 500},
     "g3": {"g1": 100, "g2": 50, "g3": 0, "g4": 50, "g5": 300, "g6": 250, "g7": 200, "g8": 250, "e": 50, "a": 500},
     "g4": {"g1": 150, "g2": 100, "g3": 50, "g4": 0, "g5": 350, "g6": 300, "g7": 250, "g8": 200, "e": 50, "a": 500},
-    "a": {"g1": 500, "g2": 500, "g3": 500, "g4": 500, "g5": 500, "g6": 500, "g7": 500, "g8": 500, "e": 500, "a": 0}  # Apron
+    "a": {"g1": 500, "g2": 500, "g3": 500, "g4": 500, "g5": 500, "g6": 500, "g7": 500, "g8": 500, "e": 500, "a": 0}
+    # Apron
 }
 
 # Set of international gates
@@ -43,7 +48,8 @@ K_i = {
     "g6": {"g1": 250, "g2": 200, "g3": 250, "g4": 300, "g5": 50, "g6": 0, "g7": 50, "g8": 100, "e": 50, "a": 500},
     "g7": {"g1": 300, "g2": 250, "g3": 200, "g4": 250, "g5": 300, "g6": 50, "g7": 0, "g8": 50, "e": 50, "a": 500},
     "g8": {"g1": 350, "g2": 300, "g3": 250, "g4": 200, "g5": 150, "g6": 100, "g7": 50, "g8": 0, "e": 50, "a": 500},
-    "a": {"g1": 500, "g2": 500, "g3": 500, "g4": 500, "g5": 500, "g6": 500, "g7": 500, "g8": 500, "e": 500, "a": 0}  # Apron
+    "a": {"g1": 500, "g2": 500, "g3": 500, "g4": 500, "g5": 500, "g6": 500, "g7": 500, "g8": 500, "e": 500, "a": 0}
+    # Apron
 }
 
 # Set of all fixed domestic gates
@@ -79,36 +85,56 @@ I_i = generate_random_interval_presence({k: v for k, v in I.items() if v == 0}.k
 pax_arr = generate_random_integer_dict(aircraft, total_pax)
 
 # Number of passengers leaving the airport via its exit from aircraft i
-f = {k: v-random.randint(0, v) for k, v in pax_arr.items()}
+f = {k: v - random.randint(0, v) for k, v in pax_arr.items()}
 
 # Number of passengers transiting from aircraft i
 pax_tra = {k: pax_arr[k] - v1 for k, v1 in f.items()}
 
-def possible_transfer_aircraft(aircraft_num, I):
+
+def possible_transfer_aircraft(aircraft_num):
     if I[aircraft_num] == 1:
         I_k = I_d
     else:
         I_k = I_i
+    earliest_time = 0
     for k, v in I_k[aircraft_num].items():
         if v == 1:
-            return k
+            earliest_time = k
+    possible_ac = []
+    for i in I_d:
+        for k, v in I_d[i].items():
+            if v == 1 and k > earliest_time:
+                possible_ac.append(i)
+    for i in I_i:
+        for k, v in I_i[i].items():
+            if v == 1 and k > earliest_time:
+                possible_ac.append(i)
+    return list(set(possible_ac))
 
 # Number of passengers transiting from aircraft i to aircraft j
+
+def generate_random_list(n, m):
+    arr = [0] * m
+    for i in range(n):
+        arr[random.randint(0, n) % m] += 1
+    return arr
+
+
 def generate_transiting_passengers(aircraft, pax_tra):
     p = {k: {k: 0 for k in aircraft} for k in aircraft}
     for k in pax_tra:
         pax_tra_hold = pax_tra[k]
-        for i in range(possible_transfer_aircraft(k, I), len(aircraft)+1):
-            pax = random.randint(0, pax_tra_hold)
-            p[k][i] = pax
-            if i == k:
-                p[k][i] = 0
-            else:
-                pax_tra_hold -= pax
+        if len(possible_transfer_aircraft(k)) > 0:
+            pax = generate_random_list(pax_tra_hold, len(possible_transfer_aircraft(k)))
+            j = 0
+            for i in possible_transfer_aircraft(k):
+                p[k][i] = pax[j]
+                j += 1
     return p
 
 
 p = generate_transiting_passengers(aircraft, pax_tra)
+
 
 # Number of passengers coming from entrance of the airport to aircraft i
 def generate_entering_passengers(p, aircraft):
@@ -116,11 +142,12 @@ def generate_entering_passengers(p, aircraft):
     for k in p:
         for j in p[k]:
             pax_transin[j] += p[k][j]
-    e = {k: random.randint(0, (total_pax-v)) for k, v in pax_transin.items()}
+    e = {k: random.randint(0, (total_pax - v)) for k, v in pax_transin.items()}
     return e
 
 
 e = generate_entering_passengers(p, aircraft)
+
 
 # Set of aircraft overlapping at time interval t - I_Dt or I_It
 def overlapping_aircraft(I: dict, t_i):
