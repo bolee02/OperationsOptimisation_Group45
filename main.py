@@ -169,4 +169,3 @@ model(I, I_d, I_i,
       overlapping_aircraft_set(I_d, t), overlapping_aircraft_set(I_i, t),
       K_prime_d, K_prime_i,
       p, e, f)
-
