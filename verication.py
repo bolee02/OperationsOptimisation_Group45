@@ -24,20 +24,23 @@ def overlapping_aircraft_set(I: dict, t: dict):
 I = {1: 1,
      2: 0,
      3: 0,
-     4: 1}
+     4: 1,
+     5: 1}
 
 I_d = {1: {1: 1, 2: 1, 3: 0},
-       4: {1: 0, 2: 1, 3: 1}}
+       4: {1: 0, 2: 1, 3: 1},
+       5: {1: 0, 2: 1, 3: 0}}
 I_i = {2: {1: 1, 2: 1, 3: 0},
        3: {1: 1, 2: 1, 3: 0}}
 
-apron_distance = 40
+apron_distance = 100
 
-K = {"g1": 1, "g2": 0, "a": 0}
-K_d = {"g1": {"g1": 0, "g2": 10, "e": 20, "a": apron_distance},
-       "a": {"g1": apron_distance, "g2": apron_distance, "e": apron_distance, "a": apron_distance}}
-K_i = {"g2": {"g1": 10, "g2": 0, "e": 20, "a": apron_distance},
-       "a": {"g1": apron_distance, "g2": apron_distance, "e": apron_distance, "a": apron_distance}}
+K = {"g1": 1, "g2": 0, "g3": 1, "a": 0}
+K_d = {"g1": {"g1": 0, "g2": 10, "g3": 10, "e": 20, "a": apron_distance},
+       "g3": {"g1": 10, "g2": 10, "g3": 0, "e": 20, "a": apron_distance},
+       "a": {"g1": apron_distance, "g2": apron_distance, "g3": apron_distance, "e": apron_distance, "a": apron_distance}}
+K_i = {"g2": {"g1": 10, "g2": 0, "g3": 10, "e": 20, "a": apron_distance},
+       "a": {"g1": apron_distance, "g2": apron_distance, "g3": apron_distance, "e": apron_distance, "a": apron_distance}}
 
 t = {1: 1, 2: 2, 3: 3}
 
@@ -47,13 +50,14 @@ T_I = overlapping_aircraft_set(I_i, t)
 K_prime_d = set(K_d.keys()) - {"a"}
 K_prime_i = set(K_i.keys()) - {"a"}
 
-p = {1: {1: 0, 2: 50, 3: 50, 4: 50},  # 200 in the plane
-     2: {1: 50, 2: 0, 3: 50, 4: 50},  # 200 in the plane
-     3: {1: 50, 2: 50, 3: 0, 4: 50},  # 200 in the plane
-     4: {1: 50, 2: 50, 3: 50, 4: 0}}  # 200 in the plane
+p = {1: {1: 0, 2: 50, 3: 50, 4: 50, 5: 0},  # 200 in the plane
+     2: {1: 150, 2: 0, 3: 50, 4: 50, 5: 0},  # 200 in the plane
+     3: {1: 50, 2: 150, 3: 0, 4: 50, 5: 0},  # 200 in the plane
+     4: {1: 50, 2: 150, 3: 50, 4: 0, 5: 0},
+     5: {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}}  # 200 in the plane
 
-e = {1: 100, 2: 100, 3: 100, 4: 100}
-f = {1: 50, 2: 50, 3: 50, 4: 50}
+e = {1: 100, 2: 0, 3: 50, 4: 50, 5: 0}
+f = {1: 100, 2: 0, 3: 50, 4: 50, 5: 0}
 
 # from constraints.constr6 import find_number_in_apron
 # print(find_number_in_apron(

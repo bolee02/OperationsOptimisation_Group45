@@ -106,7 +106,7 @@ def model(I: dict, I_d: dict, I_i: dict, K: dict, K_d: dict, K_i: dict, T_D: dic
     for i in list(I.keys()):
         K_gi = K_d if I[i] else K_i
         for k in list(K_gi.keys()):
-            for l in list(K_gi.keys()):
+            for l in list(K.keys()):
                 obj += w[i, k, l] * K_gi[k][l]
 
             obj += (e[i] + f[i]) * K_gi[k]["e"] * x[i, k]
@@ -129,3 +129,6 @@ def model(I: dict, I_d: dict, I_i: dict, K: dict, K_d: dict, K_i: dict, T_D: dic
                 break
             j += 1
     ga.write('LP.lp')
+
+    constr = ga.getConstrs()
+    return
