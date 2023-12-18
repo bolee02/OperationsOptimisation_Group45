@@ -186,3 +186,5 @@ data/
 /plots/__init__.py
 
 bin/private/
+
+LP.lp
