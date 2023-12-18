@@ -34,16 +34,19 @@ def model(I: dict, I_d: dict, I_i: dict, K: dict, K_d: dict, K_i: dict, T_D: dic
     x = dict()
     "Create x. lb is lower bound; ub is upper bound; vtype is variable type"
     for i in list(I.keys()):
+        K_gi = K_d if bool(I[i]) else K_i
         for j in list(K.keys()):
-            x[i, j] = ga.addVar(lb=0, ub=1, vtype=GRB.BINARY, name=f'x_{i}{j}')
+            x[i, j] = ga.addVar(lb=0, ub=1, vtype=GRB.BINARY, name=f'x_{i}{j}') if j in K_gi else 0
+
 
 
     w = dict()
     "Create omega, as these values can change during the optimisation process this should be a gurobi variable"
     for i in list(I.keys()):
+        K_gi = K_d if bool(I[i]) else K_i
         for k in list(K.keys()):
             for l in list(K.keys()):
-                w[i, k, l] = ga.addVar(lb=0, vtype=GRB.INTEGER, name=f'w^{i}_{k}{l}')
+                w[i, k, l] = ga.addVar(lb=0, vtype=GRB.INTEGER, name=f'w^{i}_{k}{l}') if k in K_gi else 0
 
     ga.update()
     """ Referenced in paper as equation (3). Forces plane to be ony assigned to one gate. Boolean condition is to check 
@@ -115,19 +118,16 @@ def model(I: dict, I_d: dict, I_i: dict, K: dict, K_d: dict, K_i: dict, T_D: dic
     ga.update()
     ga.optimize()
 
-    sol = ga.getVars()
-    gate_names = list(K.keys())
     for i in I.keys():
-        j = 0
-        while(True):
-            if sol[(i-1)*len(K.keys())+j].X >= 0.99:
-                gate = gate_names[j]
-                print(f"aircraft {i} assigned to gate {gate}")
-                for l in gate_names:
-                    print(f"\t with {ga.getVarByName(f'w^{i}_{gate}{l}').X} passengers going to gate {l}")
+        K_gi = K_d if I[i] else K_i
+        for k in K_gi.keys():
+            if ga.getVarByName(f"x_{i}{k}").X >= 0.99:
+                print(f"aircraft {i} assigned to gate {k}")
+                for l in K.keys():
+                    print(f"\t with {ga.getVarByName(f'w^{i}_{k}{l}').X} passengers going to gate {l}")
                     pass
                 break
-            j += 1
+
     ga.write('LP.lp')
     ga.write('MPS.mps')
 
