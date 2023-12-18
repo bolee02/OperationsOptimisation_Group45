@@ -80,8 +80,8 @@ def model(I: dict, I_d: dict, I_i: dict, K: dict, K_d: dict, K_i: dict, T_D: dic
             constraint_counter += 1
     """ Equation (14) """
     for I_it in T_I.values():
-        if len(I_it)-len(K_prime_d) > 0:
-            ga.addConstr(number_of_aircraft_in_the_apron(x, I_it, len(I_it)-len(K_prime_d)), name=f"C{constraint_counter}")
+        if len(I_it)-len(K_prime_i) > 0:
+            ga.addConstr(number_of_aircraft_in_the_apron(x, I_it, len(I_it)-len(K_prime_i)), name=f"C{constraint_counter}")
             constraint_counter += 1
 
     """ Referenced in paper as equation (10). """
