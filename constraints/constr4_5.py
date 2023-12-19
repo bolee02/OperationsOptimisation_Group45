@@ -30,4 +30,14 @@ def one_aircraft_at_gate(x, I_t: dict, k):
     :param I_t: set of all aircraft (either domestic or international) overlapping in time interval t
     :type I_t: dict
     """
-    return (quicksum(x[i, k] for i in I_t)  <= 1)
+    return quicksum(x[i, k] for i in I_t) <= 1
+
+
+def one_aircraft_at_gateV2(x: dict, z: dict, I_t: dict, k: dict):
+    """
+    Conditions to check each gate in time interval T has 1 or less planes assigned
+    :param x: 1 if aircraft 𝑖 is assigned to arrive at gate 𝑘, and 0 otherwise.
+    :param z: 1 if aircraft 𝑖 is assigned to depart from gate 𝑘, and 0 otherwise.
+    :param I_t: set of all aircraft (either domestic or international) overlapping in time interval t
+    """
+    return quicksum(x[i, k] + z[i, k] for i in I_t) <= 1

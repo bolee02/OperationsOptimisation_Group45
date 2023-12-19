@@ -1,4 +1,4 @@
-from model import model
+from model import model, modelV2
 from gurobipy import GRB, Model
 
 # Set of aircraft overlapping at time interval t - I_Dt or I_It
@@ -101,3 +101,33 @@ f = {1: 100, 2: 0, 3: 50, 4: 50, 5: 0}
 
 model(I, I_d, I_i, K, K_d, K_i, T_D, T_I, K_prime_d, K_prime_i, p, e, f)
 
+
+I = {1: 1,
+     2: 1,
+}
+
+I_d = {1: {1: 1, 2: 1, 3: 0},
+       2: {1: 0, 2: 1, 3: 1}}
+I_i = {}
+
+apron_distance = 100
+
+K = {"g1": 1, "a": 0}
+K_d = {"g1": {"g1": 0, "e": 19, "a": apron_distance},
+       "a": {"g1": apron_distance, "e": apron_distance, "a": apron_distance}}
+K_i = {}
+
+t = {1: 1, 2: 2, 3: 3}
+
+T_D = overlapping_aircraft_set(I_d, t)
+T_I = overlapping_aircraft_set(I_i, t)
+
+K_prime_d = set(K_d.keys()) - {"a"}
+K_prime_i = set(K_i.keys()) - {"a"}
+
+p = {1: {1: 0, 2: 50},  # 200 in the plane
+     2: {1: 150, 2: 0}}  # 200 in the plane
+
+e = {1: 100, 2: 100}
+
+modelV2(I, I_d, I_i, K, K_d, K_i, t, K_prime_d, K_prime_i, p, e, f)
