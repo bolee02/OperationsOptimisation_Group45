@@ -130,6 +130,5 @@ def model(I: dict, I_d: dict, I_i: dict, K: dict, K_d: dict, K_i: dict, T_D: dic
 
     ga.write('LP.lp')
     ga.write('MPS.mps')
-
     constr = ga.getConstrs()
     return

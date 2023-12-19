@@ -3,7 +3,7 @@ import random
 
 total_pax = 330
 min_num_aircraft = 5
-max_num_aircraft = 20
+max_num_aircraft = 80
 random.seed(420)
 
 
@@ -170,8 +170,10 @@ def overlapping_aircraft_set(I: dict, t: dict):
     return T
 
 
-model(I, I_d, I_i,
+M = model(I, I_d, I_i,
       K, K_d, K_i,
       overlapping_aircraft_set(I_d, t), overlapping_aircraft_set(I_i, t),
       K_prime_d, K_prime_i,
       p, e, f)
+
+
