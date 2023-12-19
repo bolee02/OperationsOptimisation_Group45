@@ -4,6 +4,7 @@ import random
 total_pax = 330
 min_num_aircraft = 5
 max_num_aircraft = 20
+random.seed(420)
 
 
 def generate_random_interval_presence(keys, intervals):
