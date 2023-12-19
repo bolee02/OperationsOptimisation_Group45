@@ -136,8 +136,8 @@ def model(I: dict, I_d: dict, I_i: dict, K: dict, K_d: dict, K_i: dict, T_D: dic
     return
 
 
-def modelV2(I: dict, I_d: dict, I_i: dict, K: dict, K_d: dict, K_i: dict, T_D: dict, T_I: dict, K_prime_d: dict,
-          K_prime_i: dict, p: dict, e: dict, f: dict):
+def modelV2(I: dict, I_d: dict, I_i: dict, K: dict, K_d: dict, K_i: dict, t: dict, K_prime_d: dict,  K_prime_i: dict,
+            p: dict, e: dict, f: dict):
     """
     :param I: All aircraft
     :param I_d: All domestic aircraft
@@ -145,8 +145,7 @@ def modelV2(I: dict, I_d: dict, I_i: dict, K: dict, K_d: dict, K_i: dict, T_D: d
     :param K: All gates
     :param K_d: All domestic gates
     :param K_i: All internation gates
-    :param T_D: All sets of overlapping domestic aircraft for all time instances t
-    :param T_I: All sets of overlapping international aircraft for all time instances t
+    :param t: All time intervals
     :param K_prime_d:
     :param K_prime_i:
     :param p: Passenger numbers from aircraft to aircraft
@@ -155,6 +154,35 @@ def modelV2(I: dict, I_d: dict, I_i: dict, K: dict, K_d: dict, K_i: dict, T_D: d
     :param w: Passenger numbers from aircraft to gate
     :return:
     """
+
+    def overlapping_arriving_aircraft(T: dict, I: dict):
+        T_a = dict()
+        for t in T.keys():
+            I_a_t = []
+            for i in I.keys():
+                if I[i][t]:
+                    I_a_t += [i]
+            if len(I_a_t) > 1:
+                T_a[t] = I_a_t
+        return T_a
+
+    def overlapping_departing_aircraft(T: dict, I: dict):
+        T_d = dict()
+        for t in T.keys():
+            I_d_t = []
+            for i in I.keys():
+                if t == max(T.keys()) and I[i][t]:
+                    I_d_t += [i]
+                elif I[i][t] and not I[i][t + 1]:
+                    I_d_t += [i]
+            if len(I_d_t) > 1:
+                T_d[t] = I_d_t
+        return T_d
+
+    T_a_D = overlapping_arriving_aircraft(t, I_d)
+    T_a_I = overlapping_arriving_aircraft(t, I_i)
+    T_d_D = overlapping_departing_aircraft(t, I_d)
+    T_d_I = overlapping_departing_aircraft(t, I_i)
 
     """
                         Start of Model definition
@@ -198,43 +226,51 @@ def modelV2(I: dict, I_d: dict, I_i: dict, K: dict, K_d: dict, K_i: dict, T_D: d
 
     """ Referenced in report as equation (6.4). Checks that for a certain time period, only one aircraft is assigned to a 
         domestic gate """
-    for I_dt in T_D.values():
+    for I_a_dt in T_a_D.values():
         for k in K_prime_d:
-            ga.addConstr(one_aircraft_at_gateV2(x, z, I_dt, k), name=f"C{constraint_counter}")
+            ga.addConstr(one_aircraft_at_gate(x, I_a_dt, k), name=f"C{constraint_counter}")
             constraint_counter += 1
 
     """ Referenced in report as equation (6.5). Checks that for a certain time period, only one aircraft is assigned to a 
         international gate """
-    for I_it in T_I.values():
+    for I_a_it in T_a_I.values():
         for k in K_prime_i:
-            ga.addConstr(one_aircraft_at_gateV2(x, z, I_it, k), name=f"C{constraint_counter}")
+            ga.addConstr(one_aircraft_at_gate(x, I_a_it, k), name=f"C{constraint_counter}")
             constraint_counter += 1
 
-    """ Referenced in the report as equation (6.6). """
+    """ Referenced in report as equation (6.6). Checks that for the departing time period, that only one aircraft is 
+    assigned to a domestic gate """
+    for I_d_dt in T_d_D.values():
+        for k in K_prime_d:
+            ga.addConstr(one_aircraft_at_gate(z, I_d_dt, k), name=f"C{constraint_counter}")
+            constraint_counter += 1
+
+    """ Referenced in report as equation (6.7). Checks that for the departing time period, that only one aircraft is 
+    assigned to a domestic gate """
+    for I_d_it in T_d_I.values():
+        for k in K_prime_i:
+            ga.addConstr(one_aircraft_at_gate(z, I_d_it, k), name=f"C{constraint_counter}")
+            constraint_counter += 1
+
+    """ Referenced in the report as equation (6.8). """
     for i in list(I.keys()):
         K_gi = K_d if bool(I[i]) else K_i
         for k in list(K_gi):
             ga.addConstr(transit_leaving(x, K, I, p, w, i, k), name=f"C{constraint_counter}")
             constraint_counter += 1
 
-    """ Referenced in the report as equation (6.7). """
+    """ Referenced in the report as equation (6.9). """
     for i in list(I.keys()):
         K_gi = K_d if I[i] else K_i
         for k in list(K):
             ga.addConstr(transit_coming(z, K_gi, I, p, w, i, k), name=f"C{constraint_counter}")
             constraint_counter += 1
 
-    """ Referenced in the report a equation (6.10). Forces same departing fixed gate as arriving fixed gate"""
+    """ Referenced in the report a equation (6.12). Forces same departing fixed gate as arriving fixed gate"""
     for i in list(I.keys()):
         K_prime_gi = K_prime_d if I[i] else K_prime_i
         for k in K_prime_gi:
             ga.addConstr(same_fixed_gate(x[i, "a"], z[i, k], x[i, k]))
-
-    """ Referenced in the report a equation (6.10). Forces same arriving fixed gate as departing fixed gate"""
-    for i in list(I.keys()):
-        K_prime_gi = K_prime_d if I[i] else K_prime_i
-        for k in K_prime_gi:
-            ga.addConstr(same_fixed_gate(z[i, "a"], x[i, k], z[i, k]))
 
     obj = LinExpr()
     for i in list(I.keys()):
@@ -260,7 +296,6 @@ def modelV2(I: dict, I_d: dict, I_i: dict, K: dict, K_d: dict, K_i: dict, T_D: d
                 print(f"aircraft {i} assigned to arrive at gate {k_1} and depart from gate {k_2}")
                 for l in K.keys():
                     print(f"\t with {ga.getVarByName(f'w^{i}_{k_1}{l}').X} passengers going to gate {l}")
-                    print(f"\t and {ga.getVarByName(f'w^{i}_{l}{k_2}').X} passengers arriving from gate {l}")
                     pass
                 break
 
