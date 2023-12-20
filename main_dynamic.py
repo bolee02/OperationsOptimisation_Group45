@@ -170,6 +170,7 @@ def overlapping_aircraft_set(I: dict, t: dict):
     return T
 
 print(I)
+print(I_d)
 print(overlapping_aircraft_set(I_d, t))
 print(overlapping_aircraft_set(I_i, t))
 M = model(I, I_d, I_i,
