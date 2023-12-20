@@ -63,10 +63,10 @@ t_interval = [9,10,11,12,13,14,15]
 fig, ax = plt.subplots()
 ax.set_yticks([10, 20, 30, 40, 50, 60 ,70, 80, 90])
 ax.set_yticklabels(['Gate1', 'Gate2', 'Gate3', 'Gate4', 'Gate5', 'Gate6', 'Gate7', 'Gate8', 'Apron'])
-apron_counter_10 = 0
-apron_counter_12 = 0
-apron_counter_14 = 0
-apron_counter_15 = 0
+apron_counter_10 = 1
+apron_counter_12 = 1
+apron_counter_14 = 1
+apron_counter_15 = 1
 
 for index,ac_num in enumerate(ac_d):
     start_time = t_interval[ac_d_t[index]]
@@ -141,7 +141,7 @@ for index,ac_num in enumerate(ac_d):
                         color='black')
             apron_counter_15 += 1
         else:
-            ax.text(start_time + 1, y_bottom_left + 2.5, str(ac_num), ha='center', va='center', fontsize=10,
+            ax.text(start_time + 1, y_bottom_left + 2.5 + 2.5 * 2, str(ac_num), ha='center', va='center', fontsize=10,
                     color='black')
 
 
@@ -215,10 +215,10 @@ for index,ac_num in enumerate(ac_i):
                         color='black')
             apron_counter_15 += 1
         else:
-            ax.text(start_time + 1, y_bottom_left + 2.5, str(ac_num), ha='center', va='center', fontsize=10, color='black')
+            ax.text(start_time + 1, y_bottom_left + 2.5 + 2.5 * 2, str(ac_num), ha='center', va='center', fontsize=10, color='black')
 
 plt.xlim([9, 17])
-plt.ylim([0, 110])
+plt.ylim([0, 115])
 plt.xlabel('Time [hrs]')
 custom_lines = [Line2D([0], [0], color=cmap(), lw=4),
                 Line2D([0], [0], color=cmap(.5), lw=4),
