@@ -55,21 +55,21 @@ def model(I: dict, I_d: dict, I_i: dict, K: dict, K_d: dict, K_i: dict, T_D: dic
     """
     for i in list(I.keys()):
         K_gi = K_d if bool(I[i]) else K_i
-        ga.addConstr(plane_assigned_to_only_one_gate(x, i, K_gi), name=f"C{constraint_counter}")
+        ga.addConstr(plane_assigned_to_only_one_gate(x, i, K_gi), name=f"C1.{constraint_counter}")
         constraint_counter += 1
 
     """ Referenced in paper as equation (4). Checks that for a certain time period, only one aircraft is assigned to a 
         domestic gate """
     for I_dt in T_D.values():
         for k in K_prime_d:
-            ga.addConstr(one_aircraft_at_gate(x, I_dt, k), name=f"C{constraint_counter}")
+            ga.addConstr(one_aircraft_at_gate(x, I_dt, k), name=f"C2.{constraint_counter}")
             constraint_counter += 1
 
     """ Referenced in paper as equation (5). Checks that for a certain time period, only one aircraft is assigned to a 
         international gate """
     for I_it in T_I.values():
         for k in K_prime_i:
-            ga.addConstr(one_aircraft_at_gate(x, I_it, k), name=f"C{constraint_counter}")
+            ga.addConstr(one_aircraft_at_gate(x, I_it, k), name=f"C3.{constraint_counter}")
             constraint_counter += 1
 
     # """ Referenced in paper as equation (6). Checks that the number of aircraft in the apron is the same as the assigned
@@ -80,12 +80,12 @@ def model(I: dict, I_d: dict, I_i: dict, K: dict, K_d: dict, K_i: dict, T_D: dic
     """ Equation (6) will be replaced by equation (13) and (14)"""
     for I_dt in T_D.values():
         if len(I_dt)-len(K_prime_d) > 0:
-            ga.addConstr(number_of_aircraft_in_the_apron(x, I_dt, len(I_dt)-len(K_prime_d)), name=f"C{constraint_counter}")
+            ga.addConstr(number_of_aircraft_in_the_apron(x, I_dt, len(I_dt)-len(K_prime_d)), name=f"C4.{constraint_counter}")
             constraint_counter += 1
     """ Equation (14) """
     for I_it in T_I.values():
         if len(I_it)-len(K_prime_i) > 0:
-            ga.addConstr(number_of_aircraft_in_the_apron(x, I_it, len(I_it)-len(K_prime_i)), name=f"C{constraint_counter}")
+            ga.addConstr(number_of_aircraft_in_the_apron(x, I_it, len(I_it)-len(K_prime_i)), name=f"C5.{constraint_counter}")
             constraint_counter += 1
 
     """ Referenced in paper as equation (10). """
@@ -94,7 +94,7 @@ def model(I: dict, I_d: dict, I_i: dict, K: dict, K_d: dict, K_i: dict, T_D: dic
         for k in list(K_gi):
             """ I think gurobi will optimise away all the non relevant values of k but look at the comment in 
             constr10_11 """
-            ga.addConstr(transit_leaving(x, K, I, p, w, i, k), name=f"C{constraint_counter}")
+            ga.addConstr(transit_leaving(x, K, I, p, w, i, k), name=f"C7.{constraint_counter}")
             constraint_counter += 1
 
     """ Referenced in paper as equation (10). """
@@ -103,7 +103,7 @@ def model(I: dict, I_d: dict, I_i: dict, K: dict, K_d: dict, K_i: dict, T_D: dic
         for k in list(K):
             """I think gurobi will optimise away all the non relevant values of k but look at the comment in 
             constr10_11 """
-            ga.addConstr(transit_coming(x, K_gi, I, p, w, i, k), name=f"C{constraint_counter}")
+            ga.addConstr(transit_coming(x, K_gi, I, p, w, i, k), name=f"C8.{constraint_counter}")
             constraint_counter += 1
 
     obj = LinExpr()
@@ -118,7 +118,6 @@ def model(I: dict, I_d: dict, I_i: dict, K: dict, K_d: dict, K_i: dict, T_D: dic
     ga.setObjective(obj, GRB.MINIMIZE)
     ga.update()
     ga.optimize()
-
     for i in I.keys():
         K_gi = K_d if I[i] else K_i
         for k in K_gi.keys():
@@ -212,7 +211,7 @@ def modelV2(I: dict, I_d: dict, I_i: dict, K: dict, K_d: dict, K_i: dict, t: dic
     """
     for i in list(I.keys()):
         K_gi = K_d if bool(I[i]) else K_i
-        ga.addConstr(plane_assigned_to_only_one_gate(x, i, K_gi), name=f"C{constraint_counter}")
+        ga.addConstr(plane_assigned_to_only_one_gate(x, i, K_gi), name=f"C{constraint_counter}A/C2OneGate")
         constraint_counter += 1
 
     """ Referenced in report as equation (6.3). Forces plane to be ony assigned to one gate. Boolean condition is to 
@@ -300,6 +299,5 @@ def modelV2(I: dict, I_d: dict, I_i: dict, K: dict, K_d: dict, K_i: dict, t: dic
 
     ga.write('LP.lp')
     ga.write('MPS.mps')
-
     constr = ga.getConstrs()
     return

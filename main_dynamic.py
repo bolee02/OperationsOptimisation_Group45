@@ -3,8 +3,8 @@ import random
 
 total_pax = 330
 min_num_aircraft = 5
-max_num_aircraft = 80
-random.seed(420)
+max_num_aircraft = 100
+random.seed(300)
 
 
 def generate_random_interval_presence(keys, intervals):
@@ -39,7 +39,7 @@ K_d = {
     "g2": {"g1": 50, "g2": 0, "g3": 50, "g4": 100, "g5": 250, "g6": 200, "g7": 250, "g8": 300, "e": 50, "a": 500},
     "g3": {"g1": 100, "g2": 50, "g3": 0, "g4": 50, "g5": 300, "g6": 250, "g7": 200, "g8": 250, "e": 50, "a": 500},
     "g4": {"g1": 150, "g2": 100, "g3": 50, "g4": 0, "g5": 350, "g6": 300, "g7": 250, "g8": 200, "e": 50, "a": 500},
-    "a": {"g1": 500, "g2": 500, "g3": 500, "g4": 500, "g5": 500, "g6": 500, "g7": 500, "g8": 500, "e": 500, "a": 0}
+    "a": {"g1": 500, "g2": 500, "g3": 500, "g4": 500, "g5": 500, "g6": 500, "g7": 500, "g8": 500, "e": 500, "a": 500}
     # Apron
 }
 
@@ -49,7 +49,7 @@ K_i = {
     "g6": {"g1": 250, "g2": 200, "g3": 250, "g4": 300, "g5": 50, "g6": 0, "g7": 50, "g8": 100, "e": 50, "a": 500},
     "g7": {"g1": 300, "g2": 250, "g3": 200, "g4": 250, "g5": 300, "g6": 50, "g7": 0, "g8": 50, "e": 50, "a": 500},
     "g8": {"g1": 350, "g2": 300, "g3": 250, "g4": 200, "g5": 150, "g6": 100, "g7": 50, "g8": 0, "e": 50, "a": 500},
-    "a": {"g1": 500, "g2": 500, "g3": 500, "g4": 500, "g5": 500, "g6": 500, "g7": 500, "g8": 500, "e": 500, "a": 0}
+    "a": {"g1": 500, "g2": 500, "g3": 500, "g4": 500, "g5": 500, "g6": 500, "g7": 500, "g8": 500, "e": 500, "a": 500}
     # Apron
 }
 
@@ -72,7 +72,7 @@ t = {
 }
 
 # Set of all aircraft, 1 if domestic, 0 if international
-num_aircraft = random.randint(min_num_aircraft, max_num_aircraft)
+num_aircraft = 40
 aircraft = list(range(1, num_aircraft + 1))
 I = {i: random.choice([0, 1]) for i in aircraft}
 
@@ -140,9 +140,9 @@ p = generate_transiting_passengers(aircraft, pax_tra)
 # Number of passengers coming from entrance of the airport to aircraft i
 def generate_entering_passengers(p, aircraft):
     pax_transin = {k: 0 for k in aircraft}
-    for k in p:
+    for k in p.keys():
         for j in p[k]:
-            pax_transin[j] += p[k][j]
+            pax_transin[k] += p[k][j]
     e = {k: random.randint(0, (total_pax - v)) for k, v in pax_transin.items()}
     return e
 
@@ -169,7 +169,9 @@ def overlapping_aircraft_set(I: dict, t: dict):
             T[k] = list(result.keys())
     return T
 
-
+print(I)
+print(overlapping_aircraft_set(I_d, t))
+print(overlapping_aircraft_set(I_i, t))
 M = model(I, I_d, I_i,
       K, K_d, K_i,
       overlapping_aircraft_set(I_d, t), overlapping_aircraft_set(I_i, t),

@@ -1,37 +1,103 @@
 import gurobipy as gp
 from gurobipy import GRB
 import subprocess
-from main_dynamic import generate_random_interval_presence, I, I_d, I_i, K, K_d, K_i, overlapping_aircraft_set, K_prime_d, K_prime_i,p, e, f, t
+from main_dynamic import I, I_d, I_i, K, K_d, K_i, overlapping_aircraft_set, K_prime_d, K_prime_i,p, e, f, t
 from model import model
 
 
 
-scenario_max = 1
+# subprocess.run(["python", "main_dynamic.py"])
+# m_base = gp.read('MPS.mps')
+# m_base.optimize()
+# objValue_base = m_base.ObjVal
+#
+#arrival delayed 1 hour
+# I_d[1] = {1: 0, 2: 0, 3: 1, 4: 1, 5: 0, 6: 0, 7: 0, 8: 0}
+# M = model(I, I_d, I_i,
+#       K, K_d, K_i,
+#       overlapping_aircraft_set(I_d, t), overlapping_aircraft_set(I_i, t),
+#       K_prime_d, K_prime_i,
+#       p, e, f)
+# m_delayed = gp.read('MPS.mps')
+# m_delayed.optimize()
+# objValue_delayed = m_delayed.ObjVal
 
-# for scenario in range (scenario_max):
-subprocess.run(["python", "main_dynamic.py"])
-m_base = gp.read('MPS.mps')
-m_base.optimize()
-#     optObjVal = m_base.ObjVal
-#     dec_vars_opt = m_base.getVars()
-#     NA_opt = m_base.
-#     newObjVal = optObjVal
-#     while(newObjVal == optObjVal):
-#         NA_new =
-# Var/Constr attributes to print
+#arrival delayed 2 hours
+I_d[1] = {1: 0, 2: 0, 3: 0, 4: 1, 5: 1, 6: 0, 7: 0, 8: 0}
+M = model(I, I_d, I_i,
+      K, K_d, K_i,
+      overlapping_aircraft_set(I_d, t), overlapping_aircraft_set(I_i, t),
+      K_prime_d, K_prime_i,
+      p, e, f)
+m_delayed = gp.read('MPS.mps')
+m_delayed.optimize()
+objValue_delayed = m_delayed.ObjVal
+objValue_arr = []
 
-var_attrs = ('VarName', 'X', 'SAObjLow', 'SAObjUp')
-con_attrs = ('ConstrName', 'Pi', 'SARHSLow', 'SARHSUp')
 
-# Print formatted tables
-head_fmt = '\n{:12s}' + '{:>15s}' * 3
-row_fmt = '{:12s}' + '{:>15.6f}' * 3
-print(head_fmt.format(*var_attrs))
-for v in m_base.getVars():
-    print(row_fmt.format(*map(lambda x: v.getAttr(x), var_attrs)))
-print(head_fmt.format(*con_attrs))
-for c in m_base.getConstrs():
-    print(row_fmt.format(*map(lambda x: c.getAttr(x), con_attrs)))
+
+
+for v in range (6):
+      if v ==0:
+            subprocess.run(["python", "main_dynamic.py"])
+            m_base = gp.read('MPS.mps')
+            m_base.optimize()
+            objValue_base = m_base.ObjVal
+            print('THIS', objValue_delayed)
+            print(v)
+            objValue_arr.append(objValue_base)
+      elif v==1:
+            I_d[1] = {1: 0, 2: 0, 3: 1, 4: 1, 5: 0, 6: 0, 7: 0, 8: 0}
+            M = model(I, I_d, I_i,K, K_d, K_i,overlapping_aircraft_set(I_d, t), overlapping_aircraft_set(I_i, t),K_prime_d, K_prime_i,p, e, f)
+            m_delayed = gp.read('MPS.mps')
+            m_delayed.optimize()
+            objValue_delayed = m_delayed.ObjVal
+            print('THIS', objValue_delayed)
+            print(v)
+            objValue_arr.append(objValue_delayed)
+      elif v==2:
+            I_d[1] = {1: 0, 2: 0, 3: 0, 4: 1, 5: 1, 6: 0, 7: 0, 8: 0}
+            M = model(I, I_d, I_i,K, K_d, K_i,overlapping_aircraft_set(I_d, t), overlapping_aircraft_set(I_i, t),K_prime_d, K_prime_i,p, e, f)
+            m_delayed = gp.read('MPS.mps')
+            m_delayed.optimize()
+            objValue_delayed = m_delayed.ObjVal
+            print('THIS', objValue_delayed)
+            print(v)
+            objValue_arr.append(objValue_delayed)
+      elif v == 3:
+            I_d[1] = {1: 0, 2: 0, 3: 0, 4: 0, 5: 1, 6: 1, 7: 0, 8: 0}
+            M = model(I, I_d, I_i, K, K_d, K_i, overlapping_aircraft_set(I_d, t), overlapping_aircraft_set(I_i, t),
+                      K_prime_d, K_prime_i, p, e, f)
+            m_delayed = gp.read('MPS.mps')
+            m_delayed.optimize()
+            objValue_delayed = m_delayed.ObjVal
+            print('THIS', objValue_delayed)
+            print(v)
+            objValue_arr.append(objValue_delayed)
+      elif v == 4:
+            I_d[1] = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 1, 7: 1, 8: 0}
+            M = model(I, I_d, I_i, K, K_d, K_i, overlapping_aircraft_set(I_d, t), overlapping_aircraft_set(I_i, t),
+                      K_prime_d, K_prime_i, p, e, f)
+            m_delayed = gp.read('MPS.mps')
+            m_delayed.optimize()
+            objValue_delayed = m_delayed.ObjVal
+            print('THIS', objValue_delayed)
+            print(v)
+            objValue_arr.append(objValue_delayed)
+      elif v == 5:
+            I_d[1] = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 1, 8: 1}
+            M = model(I, I_d, I_i, K, K_d, K_i, overlapping_aircraft_set(I_d, t), overlapping_aircraft_set(I_i, t),
+                      K_prime_d, K_prime_i, p, e, f)
+            m_delayed = gp.read('MPS.mps')
+            m_delayed.optimize()
+            objValue_delayed = m_delayed.ObjVal
+            print('THIS',objValue_delayed)
+            print(v)
+            objValue_arr.append(objValue_delayed)
+
+print(objValue_arr)
+
+
 
 
 
